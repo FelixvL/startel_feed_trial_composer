@@ -37,7 +37,8 @@ if (!$token) {
     exit;
 }
 
-$sinceDate = (new DateTimeImmutable('-7 days'))->format('Y-m-d');
+#$sinceDate = (new DateTimeImmutable('-7 days'))->format('Y-m-d');
+$sinceDate = (new DateTimeImmutable())->format('Y-m-d');
 
 $connection = new Connection();
 $connection->setAccessToken($token);
@@ -62,16 +63,19 @@ do {
             'start_date_from' => $sinceDate,
             'per_page'        => $perPage,
             'page'            => $page,
+            'status'          => 'planned',
             // 'sort'          => 'start_date:asc', // aanzetten als jouw tenant dat toestaat
             // 'is_published'  => true,            // optioneel als ondersteund
         ]);
     } catch (\Throwable $e) {
         // fallback zonder nested course-relaties als include-streng is
+        echo "IN CATCH";
         $chunk = $client->planned_courses()->all([
             'include'         => 'course,meetings,teachers,course_location,course_variant',
             'start_date_from' => $sinceDate,
             'per_page'        => $perPage,
             'page'            => $page,
+            'status'          => 'planned',
         ]);
     }
     $planned = array_merge($planned, $chunk);
